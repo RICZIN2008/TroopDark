@@ -44,30 +44,59 @@ body{
   font-size:13px;
 }
 
+/* =====================================
+ROLAGEM
+===================================== */
+
 .cards{
   display:flex;
   gap:12px;
+
   overflow-x:auto;
+  overflow-y:hidden;
+
   scroll-behavior:smooth;
+
+  -webkit-overflow-scrolling:touch;
+
+  padding-bottom:5px;
 }
 
 .cards::-webkit-scrollbar{
-  display:none;
+  height:4px;
 }
+
+.cards::-webkit-scrollbar-thumb{
+  background:#333;
+  border-radius:20px;
+}
+
+/* =====================================
+CARD
+===================================== */
 
 .card{
   min-width:160px;
+  max-width:160px;
+
   background:var(--card);
+
   border-radius:12px;
+
   overflow:hidden;
+
   flex-shrink:0;
 }
 
 .card img{
   width:100%;
   height:150px;
+
   object-fit:cover;
+
   background:#111;
+
+  display:block;
 }
 
 .info{
@@ -77,6 +106,7 @@ body{
 .nome{
   font-size:13px;
   font-weight:bold;
+
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -85,6 +115,7 @@ body{
 .tipo{
   font-size:11px;
   color:var(--muted);
+
   margin:6px 0;
 }
 
@@ -92,10 +123,14 @@ body{
   display:block;
   text-align:center;
   text-decoration:none;
+
   background:#25D366;
   color:#fff;
+
   padding:8px;
+
   border-radius:7px;
+
   font-size:12px;
   font-weight:bold;
 }
@@ -104,6 +139,7 @@ body{
   color:#888;
   padding:10px;
 }
+
 </style>
 </head>
 
@@ -115,7 +151,7 @@ body{
 
 <div class="container">
 
-  <!-- GRUPO -->
+  <!-- GRUPO PRINCIPAL -->
 
   <div class="title-cat">
     GRUPO ⌄
@@ -123,13 +159,13 @@ body{
 
   <div class="cards" id="grupoPrincipal"></div>
 
-  <!-- CANAL -->
+  <!-- CANAL PRINCIPAL -->
 
   <div class="title-cat">
     CANAL ⌄
   </div>
 
-  <div class="cards" id="canais">
+  <div class="cards" id="canalPrincipal">
     <div class="loading">Carregando...</div>
   </div>
 
@@ -163,8 +199,14 @@ const API_KEY =
 "b3ba21d7cd62217efa87018bfdfa240f";
 
 // =====================================
+// IMAGEM PADRÃO
+// =====================================
+
+const IMG_PADRAO =
+"https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
+
+// =====================================
 // GRUPO PRINCIPAL
-// MANUAL
 // =====================================
 
 const grupoPrincipal = {
@@ -180,19 +222,14 @@ const grupoPrincipal = {
 };
 
 // =====================================
-// CANAIS
-// AUTOMÁTICO
+// CANAL PRINCIPAL
 // =====================================
 
-const canais = [
-
-  "https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01"
-
-];
+const canalPrincipal =
+"https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01";
 
 // =====================================
 // GRUPOS PARCEIROS
-// MANUAL
 // =====================================
 
 const gruposParceiros = [
@@ -205,33 +242,34 @@ const gruposParceiros = [
 
   link:
   "https://chat.whatsapp.com/LINK"
+},
+
+{
+  nome:"Novo Grupo Parceiro",
+
+  foto:
+  "https://i.imgur.com/2s9X7Zy.jpeg",
+
+  link:
+  "https://chat.whatsapp.com/LINK"
 }
 
 ];
 
 // =====================================
 // CANAIS PARCEIROS
-// AUTOMÁTICO
 // =====================================
 
 const canaisParceiros = [
 
-  "https://whatsapp.com/channel/0029VbCZdnDJP21Amqx92B2z"
+  "https://whatsapp.com/channel/0029VbCZdnDJP21Amqx92B2z",
 
-  "https://whatsapp.com/channel/0029VbCZdnDJP21Amqx92B2z"
-  
+  "https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01"
+
 ];
 
 // =====================================
-// FALLBACK WHATSAPP
-// =====================================
-
-const IMG_PADRAO =
-"https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
-
-// =====================================
 // PEGAR PREVIEW
-// APENAS PARA CANAIS
 // =====================================
 
 async function obterPreview(link){
@@ -241,9 +279,11 @@ async function obterPreview(link){
     const api =
     `https://api.linkpreview.net/?key=${API_KEY}&q=${encodeURIComponent(link)}`;
 
-    const res = await fetch(api);
+    const res =
+    await fetch(api);
 
-    const data = await res.json();
+    const data =
+    await res.json();
 
     console.log(data);
 
@@ -253,25 +293,20 @@ async function obterPreview(link){
     let imagem =
     data.image || IMG_PADRAO;
 
-    // Corrige imagens inválidas
     if(
-      imagem.includes("logo") ||
+      !imagem ||
       imagem.includes("favicon") ||
       imagem.endsWith(".ico")
     ){
       imagem = IMG_PADRAO;
     }
 
-    // Corrige títulos ruins
-    if(
-      nome.toLowerCase().includes("whatsapp")
-    ){
-      nome = "Canal WhatsApp";
-    }
-
     return {
+
       nome,
+
       imagem
+
     };
 
   }catch(e){
@@ -366,39 +401,37 @@ function renderizarGrupoPrincipal(){
 }
 
 // =====================================
-// CANAIS
+// CANAL PRINCIPAL
 // =====================================
 
-async function renderizarCanais(){
+async function renderizarCanalPrincipal(){
 
   const el =
   document.getElementById(
-  "canais"
+  "canalPrincipal"
   );
 
-  el.innerHTML = "";
+  const dados =
+  await obterPreview(
+    canalPrincipal
+  );
 
-  for(const link of canais){
+  el.innerHTML =
+  criarCard({
 
-    const dados =
-    await obterPreview(link);
+    nome:
+    dados.nome,
 
-    el.innerHTML += criarCard({
+    imagem:
+    dados.imagem,
 
-      nome:
-      dados.nome,
+    link:
+    canalPrincipal,
 
-      imagem:
-      dados.imagem,
+    tipo:
+    "Canal"
 
-      link,
-
-      tipo:
-      "Canal"
-
-    });
-
-  }
+  });
 
 }
 
@@ -480,7 +513,7 @@ async function renderizarCanaisParceiros(){
 
 renderizarGrupoPrincipal();
 
-renderizarCanais();
+renderizarCanalPrincipal();
 
 renderizarGruposParceiros();
 
