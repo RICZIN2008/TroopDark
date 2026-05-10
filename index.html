@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -116,35 +115,112 @@ body{
 
 <div class="container">
 
-  <!-- GRUPOS -->
-  <div class="title-cat">GRUPOS ⌄</div>
-  <div class="cards" id="grupos">
+  <!-- GRUPO -->
+
+  <div class="title-cat">
+    GRUPO ⌄
+  </div>
+
+  <div class="cards" id="grupoPrincipal"></div>
+
+  <!-- CANAL -->
+
+  <div class="title-cat">
+    CANAL ⌄
+  </div>
+
+  <div class="cards" id="canais">
     <div class="loading">Carregando...</div>
   </div>
 
-  <!-- CANAIS -->
-  <div class="title-cat">CANAIS ⌄</div>
-  <div class="cards" id="canais">
+  <!-- GRUPOS PARCEIROS -->
+
+  <div class="title-cat">
+    GRUPOS PARCEIROS ⌄
+  </div>
+
+  <div class="cards" id="gruposParceiros"></div>
+
+  <!-- CANAIS PARCEIROS -->
+
+  <div class="title-cat">
+    CANAIS PARCEIROS ⌄
+  </div>
+
+  <div class="cards" id="canaisParceiros">
     <div class="loading">Carregando...</div>
   </div>
 
 </div>
 
 <script>
-// SUA API
-const API_KEY = "b3ba21d7cd62217efa87018bfdfa240f";
 
-// LINKS DOS GRUPOS
-const grupos = [
-  "https://chat.whatsapp.com/LBQmatzACkd7T71mcMB5hM"
-];
+// API
+const API_KEY =
+"b3ba21d7cd62217efa87018bfdfa240f";
 
-// LINKS DOS CANAIS
+// =====================================
+// GRUPO PRINCIPAL
+// FOTO + NOME MANUAL
+// =====================================
+
+const grupoPrincipal = {
+
+nome:"TroopDark",
+
+foto:
+"https://i.imgur.com/2s9X7Zy.jpeg",
+
+link:
+"https://chat.whatsapp.com/LBQmatzACkd7T71mcMB5hM"
+
+};
+
+// =====================================
+// CANAL PRINCIPAL
+// AUTOMÁTICO
+// =====================================
+
 const canais = [
-  "https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01"
+
+"https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01"
+
 ];
 
+// =====================================
+// GRUPOS PARCEIROS
+// FOTO + NOME MANUAL
+// =====================================
+
+const gruposParceiros = [
+
+{
+  nome:"Grupo Parceiro",
+
+  foto:
+"https://i.imgur.com/2s9X7Zy.jpeg",
+
+  link:
+"https://chat.whatsapp.com/LINK"
+}
+
+];
+
+// =====================================
+// CANAIS PARCEIROS
+// AUTOMÁTICO
+// =====================================
+
+const canaisParceiros = [
+
+"https://whatsapp.com/channel/0029VbCZdnDJP21Amqx92B2z"
+
+];
+
+// =====================================
 // PEGAR PREVIEW
+// =====================================
+
 async function obterPreview(link){
 
   try{
@@ -153,46 +229,67 @@ async function obterPreview(link){
       `https://api.linkpreview.net/?key=${API_KEY}&q=${encodeURIComponent(link)}`;
 
     const res = await fetch(api);
+
     const data = await res.json();
 
     console.log(data);
 
     let imagem = data.image;
 
-    // caso imagem falhe
     if(
       !imagem ||
       imagem.includes("logo") ||
       imagem.includes("favicon")
     ){
+
       imagem =
       "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
+
     }
 
     return {
-      nome: data.title || "WhatsApp",
+
+      nome:
+      data.title || "WhatsApp",
+
       imagem
+
     };
 
   }catch(e){
 
     return {
+
       nome:"WhatsApp",
+
       imagem:
       "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+
     };
 
   }
+
 }
 
+// =====================================
 // CRIAR CARD
-function criarCard({nome, imagem, link, tipo}){
+// =====================================
+
+function criarCard({
+nome,
+imagem,
+link,
+tipo
+}){
 
   return `
   
   <div class="card">
 
-    <img src="${imagem}" loading="lazy">
+    <img
+    src="${imagem}"
+    loading="lazy"
+    >
 
     <div class="info">
 
@@ -201,7 +298,7 @@ function criarCard({nome, imagem, link, tipo}){
       </div>
 
       <div class="tipo">
-        ${tipo === "canal" ? "Canal" : "Grupo"}
+        ${tipo}
       </div>
 
       <a
@@ -217,43 +314,161 @@ function criarCard({nome, imagem, link, tipo}){
   </div>
 
   `;
-}
-
-// RENDERIZAR
-async function renderizar(lista, elemento, tipo){
-
-  elemento.innerHTML = "";
-
-  for(const link of lista){
-
-    const dados = await obterPreview(link);
-
-    elemento.innerHTML += criarCard({
-      nome:dados.nome,
-      imagem:dados.imagem,
-      link,
-      tipo
-    });
-
-  }
 
 }
 
+// =====================================
+// GRUPO PRINCIPAL
+// =====================================
+
+function renderizarGrupoPrincipal(){
+
+const el =
+document.getElementById(
+"grupoPrincipal"
+);
+
+el.innerHTML =
+criarCard({
+
+nome:
+grupoPrincipal.nome,
+
+imagem:
+grupoPrincipal.foto,
+
+link:
+grupoPrincipal.link,
+
+tipo:
+"Grupo"
+
+});
+
+}
+
+// =====================================
+// CANAIS
+// =====================================
+
+async function renderizarCanais(){
+
+const el =
+document.getElementById(
+"canais"
+);
+
+el.innerHTML = "";
+
+for(const link of canais){
+
+const dados =
+await obterPreview(link);
+
+el.innerHTML += criarCard({
+
+nome:
+dados.nome,
+
+imagem:
+dados.imagem,
+
+link,
+
+tipo:
+"Canal"
+
+});
+
+}
+
+}
+
+// =====================================
+// GRUPOS PARCEIROS
+// =====================================
+
+function renderizarGruposParceiros(){
+
+const el =
+document.getElementById(
+"gruposParceiros"
+);
+
+el.innerHTML = "";
+
+gruposParceiros.forEach(grupo => {
+
+el.innerHTML += criarCard({
+
+nome:
+grupo.nome,
+
+imagem:
+grupo.foto,
+
+link:
+grupo.link,
+
+tipo:
+"Grupo Parceiro"
+
+});
+
+});
+
+}
+
+// =====================================
+// CANAIS PARCEIROS
+// =====================================
+
+async function renderizarCanaisParceiros(){
+
+const el =
+document.getElementById(
+"canaisParceiros"
+);
+
+el.innerHTML = "";
+
+for(const link of canaisParceiros){
+
+const dados =
+await obterPreview(link);
+
+el.innerHTML += criarCard({
+
+nome:
+dados.nome,
+
+imagem:
+dados.imagem,
+
+link,
+
+tipo:
+"Canal Parceiro"
+
+});
+
+}
+
+}
+
+// =====================================
 // INICIAR
-renderizar(
-  grupos,
-  document.getElementById("grupos"),
-  "grupo"
-);
+// =====================================
 
-renderizar(
-  canais,
-  document.getElementById("canais"),
-  "canal"
-);
+renderizarGrupoPrincipal();
+
+renderizarCanais();
+
+renderizarGruposParceiros();
+
+renderizarCanaisParceiros();
 
 </script>
 
 </body>
 </html>
-```
