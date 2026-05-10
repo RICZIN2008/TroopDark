@@ -8,12 +8,9 @@
 
 <style>
 
-:root{
-  --bg:#121212;
-  --card:#1e1e1e;
-  --text:#fff;
-  --muted:#aaa;
-}
+/* =========================
+RESET
+========================= */
 
 *{
   margin:0;
@@ -21,46 +18,69 @@
   box-sizing:border-box;
 }
 
+/* =========================
+FUNDO ESTÁVEL
+========================= */
+
 body{
-  background:var(--bg);
-  color:var(--text);
   font-family:Arial,sans-serif;
+  color:#fff;
+  min-height:100vh;
+
+  background-image:url("https://files.catbox.moe/ai2gz5.png");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+
+  position:relative;
+  overflow-x:hidden;
 }
 
+/* overlay escuro (não quebra imagem) */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.65);
+  z-index:0;
+}
+
+/* =========================
+CONTEÚDO
+========================= */
+
 .hero{
-  background:#000;
+  background:rgba(0,0,0,0.6);
   padding:25px;
   text-align:center;
   font-weight:bold;
   font-size:22px;
+  position:relative;
+  z-index:1;
 }
 
 .container{
   padding:15px;
+  position:relative;
+  z-index:1;
 }
 
 .title-cat{
   margin:18px 0 10px;
-  color:var(--muted);
+  color:#aaa;
   font-size:13px;
 }
 
-/* =====================================
-ROLAGEM
-===================================== */
+/* =========================
+CARDS
+========================= */
 
 .cards{
   display:flex;
   gap:12px;
-
   overflow-x:auto;
-  overflow-y:hidden;
-
-  scroll-behavior:smooth;
-
-  -webkit-overflow-scrolling:touch;
-
   padding-bottom:5px;
+  -webkit-overflow-scrolling:touch;
 }
 
 .cards::-webkit-scrollbar{
@@ -72,32 +92,20 @@ ROLAGEM
   border-radius:20px;
 }
 
-/* =====================================
-CARD
-===================================== */
-
 .card{
   min-width:160px;
   max-width:160px;
-
-  background:var(--card);
-
+  background:#1e1e1e;
   border-radius:12px;
-
   overflow:hidden;
-
   flex-shrink:0;
 }
 
 .card img{
   width:100%;
   height:150px;
-
   object-fit:cover;
-
   background:#111;
-
-  display:block;
 }
 
 .info{
@@ -107,7 +115,6 @@ CARD
 .nome{
   font-size:13px;
   font-weight:bold;
-
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -115,8 +122,7 @@ CARD
 
 .tipo{
   font-size:11px;
-  color:var(--muted);
-
+  color:#aaa;
   margin:6px 0;
 }
 
@@ -124,21 +130,12 @@ CARD
   display:block;
   text-align:center;
   text-decoration:none;
-
   background:#25D366;
   color:#fff;
-
   padding:8px;
-
   border-radius:7px;
-
   font-size:12px;
   font-weight:bold;
-}
-
-.loading{
-  color:#888;
-  padding:10px;
 }
 
 </style>
@@ -146,416 +143,109 @@ CARD
 
 <body>
 
-<div class="hero">
-  TROOPDARK
-</div>
+<div class="hero">TROOPDARK</div>
 
 <div class="container">
 
-  <!-- GRUPO PRINCIPAL -->
-
-  <div class="title-cat">
-    GRUPO ⌄
-  </div>
-
+  <div class="title-cat">GRUPO PRINCIPAL</div>
   <div class="cards" id="grupoPrincipal"></div>
 
-  <!-- CANAL PRINCIPAL -->
+  <div class="title-cat">CANAL PRINCIPAL</div>
+  <div class="cards" id="canalPrincipal"></div>
 
-  <div class="title-cat">
-    CANAL ⌄
-  </div>
-
-  <div class="cards" id="canalPrincipal">
-    <div class="loading">Carregando...</div>
-  </div>
-
-  <!-- GRUPOS PARCEIROS -->
-
-  <div class="title-cat">
-    GRUPOS PARCEIROS ⌄
-  </div>
-
+  <div class="title-cat">GRUPOS PARCEIROS</div>
   <div class="cards" id="gruposParceiros"></div>
 
-  <!-- CANAIS PARCEIROS -->
-
-  <div class="title-cat">
-    CANAIS PARCEIROS ⌄
-  </div>
-
-  <div class="cards" id="canaisParceiros">
-    <div class="loading">Carregando...</div>
-  </div>
+  <div class="title-cat">CANAIS PARCEIROS</div>
+  <div class="cards" id="canaisParceiros"></div>
 
 </div>
 
 <script>
 
-// =====================================
-// API
-// =====================================
-
-const API_KEY =
-"b3ba21d7cd62217efa87018bfdfa240f";
-
-// =====================================
-// IMAGEM PADRÃO
-// =====================================
-
 const IMG_PADRAO =
 "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
 
-// =====================================
-// GRUPO PRINCIPAL
-// =====================================
+/* =========================
+DADOS
+========================= */
 
 const grupoPrincipal = {
-
-  nome:"TroopDark",
-
-  foto:
-  "https://files.catbox.moe/lcl4vw.png",
-
-  link:
-  "https://chat.whatsapp.com/LBQmatzACkd7T71mcMB5hM"
-
+  nome: "TroopDark ᵗᵈᵏ",
+  foto: "https://files.catbox.moe/lcl4vw.png",
+  link: "https://chat.whatsapp.com/LBQmatzACkd7T71mcMB5hM"
 };
 
-// =====================================
-// CANAL PRINCIPAL
-// =====================================
-
-const canalPrincipal =
-"https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01";
-
-// =====================================
-// GRUPOS PARCEIROS
-// =====================================
+const canalPrincipal = {
+  nome: "TroopDark ᵗᵈᵏ #Channel",
+  foto: "https://files.catbox.moe/lcl4vw.png",
+  link: "https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01"
+};
 
 const gruposParceiros = [
-
-{
-  nome:"Grupo Parceiro",
-
-  foto:
-  "https://i.imgur.com/2s9X7Zy.jpeg",
-
-  link:
-  "https://chat.whatsapp.com/LINK"
-},
-
-{
-  nome:"Novo Grupo Parceiro",
-
-  foto:
-  "https://i.imgur.com/2s9X7Zy.jpeg",
-
-  link:
-  "https://chat.whatsapp.com/LINK"
-}
-
+  {
+    nome: "Sem Grupo",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
+    link: "https://chat.whatsapp.com/LINK1"
+  },
+  {
+    nome: "Sem Grupo",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
+    link: "https://chat.whatsapp.com/LINK1"
+  }
 ];
-
-// =====================================
-// CANAIS PARCEIROS
-// =====================================
 
 const canaisParceiros = [
-
-  "https://whatsapp.com/channel/0029VbCZdnDJP21Amqx92B2z",
-
-  "https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01"
-
+  {
+    nome: "Aliança AMT Channel #⁰⁰⁷🇰🇷",
+    foto: "https://files.catbox.moe/o5eb0u.png",
+    link: "https://whatsapp.com/channel/0029VbCZdnDJP21Amqx92B2z"
+  },
+  {
+    nome: "Sem Channel",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
+    link: "https://chat.whatsapp.com/LINK2"
+  }
 ];
 
-// =====================================
-// PEGAR PREVIEW COM CACHE
-// =====================================
+/* =========================
+CARD
+========================= */
 
-async function obterPreview(link){
-
-  // CHAVE DO CACHE
-
-  const cacheKey =
-  "canal_" + btoa(link);
-
-  // VERIFICAR CACHE
-
-  const cache =
-  localStorage.getItem(cacheKey);
-
-  if(cache){
-
-    return JSON.parse(cache);
-
-  }
-
-  try{
-
-    const api =
-    `https://api.linkpreview.net/?key=${API_KEY}&q=${encodeURIComponent(link)}`;
-
-    const res =
-    await fetch(api);
-
-    const data =
-    await res.json();
-
-    console.log(data);
-
-    let nome =
-    data.title || "Canal WhatsApp";
-
-    let imagem =
-    data.image || IMG_PADRAO;
-
-    // VALIDAR IMAGEM
-
-    if(
-      !imagem ||
-      imagem.includes("favicon") ||
-      imagem.endsWith(".ico")
-    ){
-      imagem = IMG_PADRAO;
-    }
-
-    const resultado = {
-
-      nome,
-
-      imagem
-
-    };
-
-    // SALVAR CACHE
-
-    localStorage.setItem(
-      cacheKey,
-      JSON.stringify(resultado)
-    );
-
-    return resultado;
-
-  }catch(e){
-
-    console.log(e);
-
-    // RETORNAR CACHE SE EXISTIR
-
-    if(cache){
-
-      return JSON.parse(cache);
-
-    }
-
-    return {
-
-      nome:"Canal WhatsApp",
-
-      imagem:IMG_PADRAO
-
-    };
-
-  }
-
-}
-
-// =====================================
-// CRIAR CARD
-// =====================================
-
-function criarCard({
-nome,
-imagem,
-link,
-tipo
-}){
-
+function card(item, tipo){
   return `
-
   <div class="card">
-
-    <img
-      src="${imagem}"
-      loading="lazy"
-      onerror="this.src='${IMG_PADRAO}'"
-    >
-
+    <img src="${item.foto || IMG_PADRAO}"
+         onerror="this.src='${IMG_PADRAO}'">
     <div class="info">
-
-      <div class="nome">
-        ${nome}
-      </div>
-
-      <div class="tipo">
-        ${tipo}
-      </div>
-
-      <a
-        href="${link}"
-        target="_blank"
-        class="btn"
-      >
-        Entrar
-      </a>
-
+      <div class="nome">${item.nome}</div>
+      <div class="tipo">${tipo}</div>
+      <a class="btn" href="${item.link}" target="_blank">Entrar</a>
     </div>
-
   </div>
-
   `;
-
 }
 
-// =====================================
-// GRUPO PRINCIPAL
-// =====================================
+/* =========================
+RENDER
+========================= */
 
-function renderizarGrupoPrincipal(){
+function render(){
 
-  const el =
-  document.getElementById(
-  "grupoPrincipal"
-  );
+  document.getElementById("grupoPrincipal").innerHTML =
+    card(grupoPrincipal, "Grupo");
 
-  el.innerHTML =
-  criarCard({
+  document.getElementById("canalPrincipal").innerHTML =
+    card(canalPrincipal, "Canal");
 
-    nome:
-    grupoPrincipal.nome,
+  document.getElementById("gruposParceiros").innerHTML =
+    gruposParceiros.map(g => card(g, "Grupo Parceiro")).join("");
 
-    imagem:
-    grupoPrincipal.foto,
-
-    link:
-    grupoPrincipal.link,
-
-    tipo:
-    "Grupo"
-
-  });
-
+  document.getElementById("canaisParceiros").innerHTML =
+    canaisParceiros.map(c => card(c, "Canal Parceiro")).join("");
 }
 
-// =====================================
-// CANAL PRINCIPAL
-// =====================================
-
-async function renderizarCanalPrincipal(){
-
-  const el =
-  document.getElementById(
-  "canalPrincipal"
-  );
-
-  const dados =
-  await obterPreview(
-    canalPrincipal
-  );
-
-  el.innerHTML =
-  criarCard({
-
-    nome:
-    dados.nome,
-
-    imagem:
-    dados.imagem,
-
-    link:
-    canalPrincipal,
-
-    tipo:
-    "Canal"
-
-  });
-
-}
-
-// =====================================
-// GRUPOS PARCEIROS
-// =====================================
-
-function renderizarGruposParceiros(){
-
-  const el =
-  document.getElementById(
-  "gruposParceiros"
-  );
-
-  el.innerHTML = "";
-
-  gruposParceiros.forEach(grupo => {
-
-    el.innerHTML += criarCard({
-
-      nome:
-      grupo.nome,
-
-      imagem:
-      grupo.foto,
-
-      link:
-      grupo.link,
-
-      tipo:
-      "Grupo Parceiro"
-
-    });
-
-  });
-
-}
-
-// =====================================
-// CANAIS PARCEIROS
-// =====================================
-
-async function renderizarCanaisParceiros(){
-
-  const el =
-  document.getElementById(
-  "canaisParceiros"
-  );
-
-  el.innerHTML = "";
-
-  for(const link of canaisParceiros){
-
-    const dados =
-    await obterPreview(link);
-
-    el.innerHTML += criarCard({
-
-      nome:
-      dados.nome,
-
-      imagem:
-      dados.imagem,
-
-      link,
-
-      tipo:
-      "Canal Parceiro"
-
-    });
-
-  }
-
-}
-
-// =====================================
-// INICIAR
-// =====================================
-
-renderizarGrupoPrincipal();
-
-renderizarCanalPrincipal();
-
-renderizarGruposParceiros();
-
-renderizarCanaisParceiros();
+document.addEventListener("DOMContentLoaded", render);
 
 </script>
 
