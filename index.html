@@ -7,6 +7,7 @@
 <title>TroopDark</title>
 
 <style>
+
 :root{
   --bg:#121212;
   --card:#1e1e1e;
@@ -269,10 +270,26 @@ const canaisParceiros = [
 ];
 
 // =====================================
-// PEGAR PREVIEW
+// PEGAR PREVIEW COM CACHE
 // =====================================
 
 async function obterPreview(link){
+
+  // CHAVE DO CACHE
+
+  const cacheKey =
+  "canal_" + btoa(link);
+
+  // VERIFICAR CACHE
+
+  const cache =
+  localStorage.getItem(cacheKey);
+
+  if(cache){
+
+    return JSON.parse(cache);
+
+  }
 
   try{
 
@@ -293,6 +310,8 @@ async function obterPreview(link){
     let imagem =
     data.image || IMG_PADRAO;
 
+    // VALIDAR IMAGEM
+
     if(
       !imagem ||
       imagem.includes("favicon") ||
@@ -301,7 +320,7 @@ async function obterPreview(link){
       imagem = IMG_PADRAO;
     }
 
-    return {
+    const resultado = {
 
       nome,
 
@@ -309,7 +328,26 @@ async function obterPreview(link){
 
     };
 
+    // SALVAR CACHE
+
+    localStorage.setItem(
+      cacheKey,
+      JSON.stringify(resultado)
+    );
+
+    return resultado;
+
   }catch(e){
+
+    console.log(e);
+
+    // RETORNAR CACHE SE EXISTIR
+
+    if(cache){
+
+      return JSON.parse(cache);
+
+    }
 
     return {
 
