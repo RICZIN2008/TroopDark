@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <title>TroopDark</title>
 
@@ -155,41 +155,44 @@ body{
 
 <script>
 
+// =====================================
 // API
+// =====================================
+
 const API_KEY =
 "b3ba21d7cd62217efa87018bfdfa240f";
 
 // =====================================
 // GRUPO PRINCIPAL
-// FOTO + NOME MANUAL
+// MANUAL
 // =====================================
 
 const grupoPrincipal = {
 
-nome:"TroopDark",
+  nome:"TroopDark",
 
-foto:
-"https://i.imgur.com/2s9X7Zy.jpeg",
+  foto:
+  "https://files.catbox.moe/lcl4vw.png",
 
-link:
-"https://chat.whatsapp.com/LBQmatzACkd7T71mcMB5hM"
+  link:
+  "https://chat.whatsapp.com/LBQmatzACkd7T71mcMB5hM"
 
 };
 
 // =====================================
-// CANAL PRINCIPAL
+// CANAIS
 // AUTOMÁTICO
 // =====================================
 
 const canais = [
 
-"https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01"
+  "https://whatsapp.com/channel/0029Vb7ZerTBqbr5oNdmst01"
 
 ];
 
 // =====================================
 // GRUPOS PARCEIROS
-// FOTO + NOME MANUAL
+// MANUAL
 // =====================================
 
 const gruposParceiros = [
@@ -198,10 +201,10 @@ const gruposParceiros = [
   nome:"Grupo Parceiro",
 
   foto:
-"https://i.imgur.com/2s9X7Zy.jpeg",
+  "https://i.imgur.com/2s9X7Zy.jpeg",
 
   link:
-"https://chat.whatsapp.com/LINK"
+  "https://chat.whatsapp.com/LINK"
 }
 
 ];
@@ -213,12 +216,20 @@ const gruposParceiros = [
 
 const canaisParceiros = [
 
-"https://whatsapp.com/channel/0029VbCZdnDJP21Amqx92B2z"
+  "https://whatsapp.com/channel/0029VbCZdnDJP21Amqx92B2z"
 
 ];
 
 // =====================================
+// FALLBACK WHATSAPP
+// =====================================
+
+const IMG_PADRAO =
+"https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
+
+// =====================================
 // PEGAR PREVIEW
+// APENAS PARA CANAIS
 // =====================================
 
 async function obterPreview(link){
@@ -226,7 +237,7 @@ async function obterPreview(link){
   try{
 
     const api =
-      `https://api.linkpreview.net/?key=${API_KEY}&q=${encodeURIComponent(link)}`;
+    `https://api.linkpreview.net/?key=${API_KEY}&q=${encodeURIComponent(link)}`;
 
     const res = await fetch(api);
 
@@ -234,36 +245,40 @@ async function obterPreview(link){
 
     console.log(data);
 
-    let imagem = data.image;
+    let nome =
+    data.title || "Canal WhatsApp";
 
+    let imagem =
+    data.image || IMG_PADRAO;
+
+    // Corrige imagens inválidas
     if(
-      !imagem ||
       imagem.includes("logo") ||
-      imagem.includes("favicon")
+      imagem.includes("favicon") ||
+      imagem.endsWith(".ico")
     ){
+      imagem = IMG_PADRAO;
+    }
 
-      imagem =
-      "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
-
+    // Corrige títulos ruins
+    if(
+      nome.toLowerCase().includes("whatsapp")
+    ){
+      nome = "Canal WhatsApp";
     }
 
     return {
-
-      nome:
-      data.title || "WhatsApp",
-
+      nome,
       imagem
-
     };
 
   }catch(e){
 
     return {
 
-      nome:"WhatsApp",
+      nome:"Canal WhatsApp",
 
-      imagem:
-      "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+      imagem:IMG_PADRAO
 
     };
 
@@ -283,12 +298,13 @@ tipo
 }){
 
   return `
-  
+
   <div class="card">
 
     <img
-    src="${imagem}"
-    loading="lazy"
+      src="${imagem}"
+      loading="lazy"
+      onerror="this.src='${IMG_PADRAO}'"
     >
 
     <div class="info">
@@ -323,27 +339,27 @@ tipo
 
 function renderizarGrupoPrincipal(){
 
-const el =
-document.getElementById(
-"grupoPrincipal"
-);
+  const el =
+  document.getElementById(
+  "grupoPrincipal"
+  );
 
-el.innerHTML =
-criarCard({
+  el.innerHTML =
+  criarCard({
 
-nome:
-grupoPrincipal.nome,
+    nome:
+    grupoPrincipal.nome,
 
-imagem:
-grupoPrincipal.foto,
+    imagem:
+    grupoPrincipal.foto,
 
-link:
-grupoPrincipal.link,
+    link:
+    grupoPrincipal.link,
 
-tipo:
-"Grupo"
+    tipo:
+    "Grupo"
 
-});
+  });
 
 }
 
@@ -353,34 +369,34 @@ tipo:
 
 async function renderizarCanais(){
 
-const el =
-document.getElementById(
-"canais"
-);
+  const el =
+  document.getElementById(
+  "canais"
+  );
 
-el.innerHTML = "";
+  el.innerHTML = "";
 
-for(const link of canais){
+  for(const link of canais){
 
-const dados =
-await obterPreview(link);
+    const dados =
+    await obterPreview(link);
 
-el.innerHTML += criarCard({
+    el.innerHTML += criarCard({
 
-nome:
-dados.nome,
+      nome:
+      dados.nome,
 
-imagem:
-dados.imagem,
+      imagem:
+      dados.imagem,
 
-link,
+      link,
 
-tipo:
-"Canal"
+      tipo:
+      "Canal"
 
-});
+    });
 
-}
+  }
 
 }
 
@@ -390,32 +406,32 @@ tipo:
 
 function renderizarGruposParceiros(){
 
-const el =
-document.getElementById(
-"gruposParceiros"
-);
+  const el =
+  document.getElementById(
+  "gruposParceiros"
+  );
 
-el.innerHTML = "";
+  el.innerHTML = "";
 
-gruposParceiros.forEach(grupo => {
+  gruposParceiros.forEach(grupo => {
 
-el.innerHTML += criarCard({
+    el.innerHTML += criarCard({
 
-nome:
-grupo.nome,
+      nome:
+      grupo.nome,
 
-imagem:
-grupo.foto,
+      imagem:
+      grupo.foto,
 
-link:
-grupo.link,
+      link:
+      grupo.link,
 
-tipo:
-"Grupo Parceiro"
+      tipo:
+      "Grupo Parceiro"
 
-});
+    });
 
-});
+  });
 
 }
 
@@ -425,34 +441,34 @@ tipo:
 
 async function renderizarCanaisParceiros(){
 
-const el =
-document.getElementById(
-"canaisParceiros"
-);
+  const el =
+  document.getElementById(
+  "canaisParceiros"
+  );
 
-el.innerHTML = "";
+  el.innerHTML = "";
 
-for(const link of canaisParceiros){
+  for(const link of canaisParceiros){
 
-const dados =
-await obterPreview(link);
+    const dados =
+    await obterPreview(link);
 
-el.innerHTML += criarCard({
+    el.innerHTML += criarCard({
 
-nome:
-dados.nome,
+      nome:
+      dados.nome,
 
-imagem:
-dados.imagem,
+      imagem:
+      dados.imagem,
 
-link,
+      link,
 
-tipo:
-"Canal Parceiro"
+      tipo:
+      "Canal Parceiro"
 
-});
+    });
 
-}
+  }
 
 }
 
